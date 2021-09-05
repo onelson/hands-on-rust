@@ -2,11 +2,13 @@ use bracket_lib::prelude::*;
 
 const SCREEN_WIDTH: i32 = 80;
 const SCREEN_HEIGHT: i32 = 50;
-const FRAME_DURATION: f32 = 75.0;
+const MAX_FRAME_DURATION: f32 = 75.0;
+const MIN_FRAME_DURATION: f32 = 45.0;
 
 struct State {
     player: Player,
     frame_time: f32,
+    frame_duration: f32,
     obstacle: Obstacle,
     mode: GameMode,
     score: i32,
@@ -17,6 +19,7 @@ impl State {
         Self {
             player: Player::new(5, 25),
             frame_time: 0.0,
+            frame_duration: MAX_FRAME_DURATION,
             obstacle: Obstacle::new(SCREEN_WIDTH, 0),
             mode: GameMode::Menu,
             score: 0,
@@ -42,12 +45,22 @@ impl State {
         ctx.cls();
         ctx.print_centered(5, "You Died");
         ctx.print_centered(6, &format!("You earned {} points", self.score));
+        ctx.print_centered(8, "P: Play Again");
+        ctx.print_centered(9, "Q: Quit");
+
+        if let Some(key) = ctx.key {
+            match key {
+                VirtualKeyCode::P => self.restart(),
+                VirtualKeyCode::Q => ctx.quitting = true,
+                _ => {}
+            }
+        }
     }
 
     fn play(&mut self, ctx: &mut BTerm) {
         ctx.cls_bg(NAVY);
         self.frame_time += ctx.frame_time_ms;
-        if self.frame_time > FRAME_DURATION {
+        if self.frame_time > self.frame_duration {
             self.frame_time = 0.0;
             self.player.gravity_and_move();
         }
@@ -62,6 +75,10 @@ impl State {
         if self.player.x > self.obstacle.x {
             self.score += 1;
             self.obstacle = Obstacle::new(self.player.x + SCREEN_WIDTH, self.score);
+            self.frame_duration -= 2.0 * self.score as f32;
+            if self.frame_duration < MIN_FRAME_DURATION {
+                self.frame_duration = MIN_FRAME_DURATION;
+            }
         }
 
         if self.player.y > SCREEN_HEIGHT || self.obstacle.hit_obstacle(&self.player) {
