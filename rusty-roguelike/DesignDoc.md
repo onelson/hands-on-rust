@@ -34,7 +34,7 @@ the tavern, the hero promises to save the day and sets forth into the dungeon.
 - [ ] Add fields-of-view.
 - [ ] Add more interesting dungeon designs.
 - [ ] Add dungeon themes.
-- [ ] Add multiple layers to the dungeon (with teh Amulet on the last one).
+- [ ] Add multiple layers to the dungeon (with the Amulet on the last one).
 - [ ] Add new weapons.
 - [ ] Move to a data-driven design for spawning enemies.
 - [ ] Consider some visual effects to make combat more visceral.
